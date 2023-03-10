@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+
+<head>
+    <title>
+        Repeat Commerce
+    </title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1" />
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+
+    <script type="text/javascript">
+        var user = '{{request.user}}'
+
+        function getToken(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (
+                        name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(
+                            name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        var csrftoken = getToken('csrftoken');
+
+        function getCookie(name) {
+            // Split cookie string and get all individual name=value pairs in an array
+            var cookieArr = document.cookie.split(";");
+
+            // Loop through the array elements
+            for (var i = 0; i < cookieArr.length; i++) {
+                var cookiePair = cookieArr[i].split("=");
+
+                /* Removing whitespace at the beginning of the cookie name
+                and compate it with the given string */
+                if (name == cookiePair[0].trim()) {
+                    //Decode the cookie value and return
+                    return decodeURIComponent(cookiePair[1]);
+                }
+            }
+            // Return null if not found
+            return null;
+        }
+        var cart = JSON.parse(getCookie('cart'))
+        // creating a cart for any kind of user
+        // wherther we have a cart or not
+        // authenticated or unauthenticated
+        // we want to have a cart for any kind of user
+        if (cart == undefined) {    //if cart is undefined
+            cart = {}
+            console.log('Cart was created!')
+            // In order to create the actual cookies, we set the object,
+            // we actually want to set it to our browsers cookies
+            // so to do this, we are going to do - document.cookie
+            // and to set the cookie name we are going to set the string- 'cart'
+            // and to set the value we are going to do equals - =
+            // - 'cart='
+            // we want to concatinate the values so we'll do - +
+            // in theory we could do just cart
+            // but because this is a cookie right now, 
+            // the value needs to be a single value and it can't be an object
+            // we want to turn this to a string
+            // and then later on we will parse it
+            // so we're going to say JSON.stringify(cart)
+            // we also need to make sure that this keyValuePair is set to a single domain
+            // so need to assign the cookie to the main domain of the website
+            document.cookie = 'cart=' + JSON.stringify(cart) + ";domain=;path=/"
+        }
+        console.log('Cart:', cart)
+    </script>
+
+
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark main-container">
+        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-repeat"
+            viewBox="0 0 16 16">
+            <path
+                d="M11 5.466V4H5a4 4 0 0 0-3.584 5.777.5.5 0 1 1-.896.446A5 5 0 0 1 5 3h6V1.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192Zm3.81.086a.5.5 0 0 1 .67.225A5 5 0 0 1 11 13H5v1.466a.25.25 0 0 1-.41.192l-2.36-1.966a.25.25 0 0 1 0-.384l2.36-1.966a.25.25 0 0 1 .41.192V12h6a4 4 0 0 0 3.585-5.777.5.5 0 0 1 .225-.67Z" />
+        </svg>
+        <a class="navbar-brand" href="{% url 'store:store' %}">
+            <h1>Commerce</h1>
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+            <!-- <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'store:store' %}">Store <span class="sr-only">(current)</span></a>
+                </li>
+            </ul> -->
+            <form method="GET" action="{% url 'store:store' %}">
+                <div class="d-flex">
+                    <input class="form-control" name="q" placeholder="Search for products..." />
+                    <svg class="ml-3" version="1.1" xmlns="http://www.w3.org/2000/svg" width="50" height="32"
+                        viewBox="0 0 50 32">
+                        <title>search</title>
+                        <path
+                            d="M32 30.586l-10.845-10.845c1.771-2.092 2.845-4.791 2.845-7.741 0-6.617-5.383-12-12-12s-12 5.383-12 12c0 6.617 5.383 12 12 12 2.949 0 5.649-1.074 7.741-2.845l10.845 10.845 1.414-1.414zM12 22c-5.514 0-10-4.486-10-10s4.486-10 10-10c5.514 0 10 4.486 10 10s-4.486 10-10 10z">
+                        </path>
+                    </svg>
+            </form>
+        </div>
+
+        <div class="form-inline my-2 my-lg-0">
+            {% if not user.is_authenticated %}
+            <a href="{% url 'store:login' %}" class="btn btn-normal">
+                <p>Login</p>
+            </a>
+            <hr>
+            {% else %}
+            <div class="btn btn">
+                <a href="{% url 'store:user-profile' user.id %}">
+                    <div class="avatar avatar--medium active">
+                        {% if request.user.customer.profile_pic%}
+                        <img src="{{request.user.customer.profile_pic.url}}" />
+                        {% endif %}
+                    </div>
+                    <p style="color: black;"><b>{{request.user.username}}</b></p>
+                </a>
+            </div><br><br>
+
+            <a href="{% url 'store:logout' %}" class="btn btn-normal">Logout</a>
+            {% endif %}
+            <div class="justify-content-end">
+                <a href="{% url 'store:cart' %}">
+                    <img id="cart-icon" src="{% static 'images/cart.png' %}">
+                </a>
+            </div>
+            <p id="cart-total">{{cartItems}}</p>
+
+    </nav>
+    {% if request.user.is_superuser or request.user.is_staff %}
+
+
+    <button type="button" class="btn btn-secondary btn-lg btn-block"><a href="{% url 'store:adminDashboard2' %}">Admin
+            Dashboard</a></button>
+
+
+    <p style="color: black;"><b></b></p>
+    </a>
+    {% endif %}
+
+    <div class="main-container">
+        {% block content %}
+
+        {% endblock content %}
+    </div>
+
+
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+        integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+        crossorigin="anonymous"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+        integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+        crossorigin="anonymous"></script>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+        integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+        crossorigin="anonymous"></script>
+
+    <script type="text/javascript" src="{% static 'js/cart.js' %}"></script>
+
+
+</body>
+
+</html>

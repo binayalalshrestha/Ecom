@@ -1,0 +1,175 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{% block content %}
+
+<main class="auth layout">
+    {% if page == 'login' %}
+    <div class="container">
+        <div class="layout__box">
+            <div class="layout__boxHeader">
+                <div class="layout__boxTitle">
+                    <h3>Login</h3>
+                </div>
+            </div>
+            <div class="layout__body">
+                <h2 class="auth__tagline"></h2>
+
+                <form class="form" action="" method="POST">
+                    {% csrf_token %}
+                    <!-- {{ form.username.errors }}
+                    <div class="mb-3">
+                        <label for="exampleFormControlInput1" class="form-label"><b>Username</b></label>
+                        <input name="username" type="username" class="form-control" id="exampleFormControlInput1"
+                            placeholder="James Bond">
+                    </div> -->
+
+                    {{ form.username.errors }}
+                    <div class="mb-3">
+                        <label for="exampleFormControlInput1" class="form-label"><b>Email</b></label>
+                        <input name="username" type="username" class="form-control" id="exampleFormControlInput1"
+                            placeholder="customer@email.com">
+                    </div>
+
+                    {{ form.password.errors }}
+                    <div class="mb-3">
+                        <label for="exampleFormControlInput1" class="form-label"><b>Password</b></label>
+                        <input name="password" type="password" class="form-control" id="exampleFormControlInput1"
+                            placeholder="********">
+                    </div>
+                    {% if messages %}
+                    <div class="alert alert-danger" role="alert">
+                        <ul class="messages">
+                            {% for message in messages %}
+                            <li>{% if message.tags %} {{ message.tags }}" {% endif %}>{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                    <button class="btn btn-danger" type="submit">
+                        Login
+                    </button>
+                </form>
+
+                <div class="auth__action">
+                    <p>Haven't signed up yet?</p>
+                    <a href="{% url 'store:register' %}" class="btn btn-secondary">Sign Up</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+    <div class="container">
+        <div class="layout__box">
+            <div class="layout__boxHeader">
+                <div class="layout__boxTitle">
+                    <h3>Register</h3>
+                </div>
+            </div>
+            <div class="layout__body">
+                <h2 class="auth__tagline">Lets Shop!!</h2>
+                <form class="form" action="" method="POST">
+                    {% csrf_token %}
+
+                    {% comment %}
+                    {{ form.username.errors }}
+                    <div class="mb-3">
+                        <label for="exampleFormControlInput1" class="form-label"><b>Username</b></label>
+                        <input name="username" type="username" class="form-control" id="exampleFormControlInput1"
+                            placeholder="customer@email.com">
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputFirstName"><b>First Name</b></label>
+                        <input type="name" class="form-control" id="exampleInputUsername"
+                            aria-describedby="firstnameHelp" placeholder="Enter first name">
+                        <small id="firstnameHelp" class="form-text text-muted">Enter your first name.
+                        </small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1"><b>Username</b></label>
+                        <input type="name" class="form-control" id="exampleInputUsername"
+                            aria-describedby="lastnameHelp" placeholder="Enter last name">
+                        <small id="lastnameHelp" class="form-text text-muted">Enter your last name.
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1"><b>Username</b></label>
+                        <input type="username" class="form-control" id="exampleInputUsername"
+                            aria-describedby="usernameHelp" placeholder="Enter username">
+                        <small id="usernameHelp" class="form-text text-muted">Enter a social friendly username and a one
+                            you would remember easily.
+                        </small>
+                    </div>
+                    {% endcomment %}
+
+                    {{ form.email.errors }}
+                    <div class="mb-3">
+                        <label for="exampleFormControlInput1" class="form-label"><b>Email</b></label>
+                        <input name="username" type="username" class="form-control" id="exampleFormControlInput1"
+                            placeholder="customer@email.com">
+                    </div>
+
+                    <!-- <div class="mb-3">
+                        <label for="exampleInputEmail1"><b>Email address</b></label>
+                        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp"
+                            placeholder="Enter email">
+                        <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone
+                            else. . . . " Letters, digits and @/./+/-/_ only. "
+                        </small>
+                    </div> -->
+                    {{ form.password1.errors }}
+                    <!-- <div class="mb-3">
+                        <label for="exampleFormControlInput1" class="form-label"><b>Password</b></label>
+                        <input name="password1" type="password" class="form-control" id="exampleFormControlInput1"
+                            placeholder="********">
+                        <small id="password1Help" class="form-text text-muted">Do not use a common password. Make sure
+                            you use strong characters like @ # % * ~ and include numbers and complex words.
+                        </small>
+                    </div> -->
+
+                    <div class="mb-3">
+                        <label for="exampleFormControlInput1" class="form-label"><b>password</b></label>
+                        <input name="password1" type="password" class="form-control" id="exampleFormControlInput1"
+                            placeholder="password">
+                    </div>
+
+                    {{ form.password2.errors }}
+                    <!-- <div class="mb-3">
+                        <label for="exampleFormControlInput1" class="form-label"><b>Password Confirmation</b></label>
+                        <input name="password2" type="password" class="form-control" id="exampleFormControlInput1"
+                            placeholder="********">
+                        <small id="password2Help" class="form-text text-muted">" Make sure that your password matches
+                            the one which you have used in the field above. "
+                        </small>
+                    </div> -->
+
+                    <div class="mb-3">
+                        <label for="exampleFormControlInput1" class="form-label"><b>re enter password</b></label>
+                        <input name="password2" type="password" class="form-control" id="exampleFormControlInput1"
+                            placeholder="password">
+                    </div>
+                    {% if messages %}
+                    <div class="alert alert-danger" role="alert">
+                        <ul class="messages">
+                            {% for message in messages %}
+                            <li>{% if message.tags %} {{ message.tags }}" {% endif %}>{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                    <button class="btn btn-danger" type="submit">
+                        Register
+                    </button>
+                </form>
+
+                <div class="auth__action">
+                    <hr>
+                    <p>Already signed up?</p>
+                    <a href="{% url 'store:login' %}" class="btn btn-secondary">Sign In</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</main>
+
+{% endblock content %}

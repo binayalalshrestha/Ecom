@@ -1,0 +1,78 @@
+{% extends 'store/main.html' %}
+
+{% block content %}
+
+{% load static %}
+
+<main class="profile-page layout layout--3">
+    <div class="container">
+        <div class="roomList">
+            <div class="profile">
+                <div class="profile__avatar">
+                </div>
+                <div class="profile__info">
+
+                    <div class="jumbotron jumbotron-fluid">
+                        <div class="container">
+                            <h1 class="display-4">Welcome to your profile page..</h1>
+                            <p class="lead">You can view your details here</p>
+                            {% if request.user.customer.profile_pic%}
+                            <img class="profile-pic" src="{{request.user.customer.profile_pic.url}}" />
+                            {% endif %} <br> <br>
+                            <h4><button type="button" class="btn btn-outline-dark"><b>Name :
+                                        {{request.user.customer.name}}</b></button>
+                                <br>
+                                <h4><button type="button" class="btn btn-outline-dark"><b>Email :
+                                            {{request.user.username}}</b></button>
+                                    <br>
+                                </h4>
+                                <a href="{% url 'store:update-user' request.user.customer.id %}" class="btn btn-primary">Edit
+                                    Profile</a>
+                                <a href="{% url 'store:deleteUser' request.user.customer.id %}" class="btn btn-primary">Delete
+                                    Profile</a>
+                        </div>
+
+                    </div>
+                    <div>
+                        <h4><button type="button" class="btn btn"><b>Check your order history here
+                                    :</b></button> <br></h4>
+
+                        <div class="row">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">S N</th>
+                                        <th scope="col">Product Name</th>
+                                        <th scope="col">Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for orderDetail in orderDetails %}
+                                    <tr>
+                                        <th scope="row">{{forloop.counter}}</th>
+                                        <td>
+                                            <h4><button type="button"
+                                                    class="btn btn-outline-dark"><b>{{orderDetail.product}}</b></button>
+                                                <br>
+                                            </h4>
+                                        </td>
+                                        <td>{{orderDetail.date_added}}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+
+                        </div>
+
+                        <div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    </div>
+</main>
+{% endblock content %}

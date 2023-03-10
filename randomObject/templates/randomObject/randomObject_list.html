@@ -1,0 +1,42 @@
+{% extends 'randomObject/base.html' %}
+
+
+{% block content %}
+<div class="alert alert-success" role="alert">
+    <h4 class="alert-heading">Hello there !</h4>
+    <p>Welcome to the Random Obj CRUD page ! </p>
+    <hr>
+    <p class="mb-0">Here, you can view the random objects in the system, update and delete the random objs and also
+        create new random objs.</p>
+</div>
+<table class="table table-dark">
+    <thead>
+        <tr>
+            <th scope="col">S N</th>
+            <th scope="col">Random Object Name</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for randomObject in object_list %}
+        <tr>
+            <th scope="row">1</th>
+            <td><a
+                    href="{% url 'randomObject:randomObject-detail' pk=randomObject.pk %}">{{randomObject.name}}</a>
+            </td>
+            <td><a href="{% url 'randomObject:randomObject-update' pk=randomObject.pk %}"
+                    class="btn btn-secondary btn-lg" role="button">Update</a>
+            </td>
+            <td><a href="{% url 'randomObject:randomObject-delete' pk=randomObject.pk %}" class="btn btn-danger btn-lg"
+                    role="button">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+
+</table>
+<div class="jumbotron">
+    <a class="btn btn-primary btn-lg" href="{% url 'randomObject:randomObject-create' %}" role="button">Create a new
+        random object</a>
+</div>
+
+{% endblock %}

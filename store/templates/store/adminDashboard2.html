@@ -1,0 +1,348 @@
+{% load static %}
+
+<title>Admin Dashboard</title>
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1" />
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+    integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+
+
+
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark main-container custom-navbar">
+    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" class="bi bi-repeat"
+        viewBox="0 0 16 16">
+        <path
+            d="M11 5.466V4H5a4 4 0 0 0-3.584 5.777.5.5 0 1 1-.896.446A5 5 0 0 1 5 3h6V1.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192Zm3.81.086a.5.5 0 0 1 .67.225A5 5 0 0 1 11 13H5v1.466a.25.25 0 0 1-.41.192l-2.36-1.966a.25.25 0 0 1 0-.384l2.36-1.966a.25.25 0 0 1 .41.192V12h6a4 4 0 0 0 3.585-5.777.5.5 0 0 1 .225-.67Z" />
+    </svg>
+    <a class="navbar-brand" href="{% url 'store:store' %}">
+        <h1>Commerce</h1>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse justify-content-end" id="navbarSupportedContent">
+        <form method="GET" action="{% url 'store:store' %}">
+            <div class="d-flex">
+                <input class="form-control" name="q" placeholder="Search for products..." />
+                <svg class="ml-3" version="1.1" xmlns="http://www.w3.org/2000/svg" width="50" height="32"
+                    viewBox="0 0 50 32">
+                    <title>search</title>
+                    <path
+                        d="M32 30.586l-10.845-10.845c1.771-2.092 2.845-4.791 2.845-7.741 0-6.617-5.383-12-12-12s-12 5.383-12 12c0 6.617 5.383 12 12 12 2.949 0 5.649-1.074 7.741-2.845l10.845 10.845 1.414-1.414zM12 22c-5.514 0-10-4.486-10-10s4.486-10 10-10c5.514 0 10 4.486 10 10s-4.486 10-10 10z">
+                    </path>
+                </svg>
+        </form>
+    </div>
+
+    <div class="form-inline my-2 my-lg-0">
+        {% if not user.is_authenticated %}
+        <a href="{% url 'store:login' %}" class="btn btn-normal">
+            <p>Login</p>
+        </a>
+        <hr>
+        {% else %}
+        <div class="btn btn">
+            <a href="{% url 'store:user-profile' user.id %}">
+                <div class="avatar avatar--medium active">
+                    {% if request.user.customer.profile_pic%}
+                    <img src="{{request.user.customer.profile_pic.url}}" />
+                    {% endif %}
+                </div>
+                <p style="color: black;"><b>{{request.user.username}}</b></p>
+            </a>
+        </div><br><br>
+
+        <a href="{% url 'store:logout' %}" class="btn btn-normal">Logout</a>
+        {% endif %}
+
+</nav>
+
+<div class="main-container">
+
+    {% block content %}
+
+    <div class="card text-white bg-dark mb-3">
+        <div class="card-header">
+            <h2><b>Menu : </b></h2><small>(click to scroll directly to destination)</small>
+        </div>
+        <div class="card-body">
+            <blockquote class="blockquote mb-0">
+                <div>
+                    <ul class="nav justify-content-center">
+                        <hr>
+                        <button type="button" class="btn btn-danger" onclick="scrollToDivProducts()">
+                            <h2><i>{Products}</i></h2>
+                        </button>
+                        <hr>
+                        <button type="button" class="btn btn-success" onclick="scrollToDivCustomerList()">
+                            <h2><i>{Customer List}</i></h2>
+                        </button>
+                        <hr>
+                        {% if request.user.is_superuser %}
+                        <button type="button" class="btn btn-warning" onclick="scrollToDivMakeUsersStaff()">
+                            <h2><i>{Make Users Staff}</i></h2>
+                        </button>
+                        <hr>
+                        <button type="button" class="btn btn-secondary" onclick="scrollToDivRandomObject()">
+                            <h2><i>{Rnadom Object}</i></h2>
+                        </button>
+                        <hr>
+                        {% endif %}
+                    </ul>
+                </div>
+            </blockquote>
+        </div>
+    </div>
+
+    {% if request.user.is_superuser %}
+    <div class="jumbotron text-white bg-dark mb-3">
+        <h1 class="display-4">Hello, <b><i><u>Boss!</u></i></b></h1>
+        <p class="lead">This is the admin dashboard where you can see your store details.</p>
+        <hr class="my-4">
+        <p>To go to the main
+            store site click on the link below.</p>
+        <a class="btn btn-primary btn-lg" href="{% url 'store:store' %}" role="button">Store Page</a>
+    </div>
+    {% elif request.user.is_staff %}
+    <div class="jumbotron text-white bg-dark mb-3">
+        <h1 class="display-4">Hello, <b><i><u>Staff Member!</u></i></b></h1>
+        <p class="lead">This is the staff dashboard where you can see your store details.</p>
+        <hr class="my-4">
+        <p>To go to the main
+            store site click on the link below.</p>
+        <a class="btn btn-primary btn-lg" href="{% url 'store:store' %}" role="button">Store Page</a>
+    </div>
+    {% endif %}
+
+    <div class="jumbotron text-white bg-dark mb-3" id="productsScroll">
+        <h1 class="display-4"><b><i><u>Products</u></i></b></h1>
+        <div class="d-flex justify-content-end">
+            <button type="button" class="btn btn-success"><a href="{% url 'store:createProduct' %}">
+                    <h2>Add a product</h2>
+                </a></button>
+
+        </div>
+        <p class="lead">These are the products in your ecommerce.</p>
+        <hr class="my-4">
+        <div class="row">
+            <table class="table text-center">
+                <thead>
+                    <tr class="row">
+                        <th class="col-lg-1">
+                            <h2><b>S N</b></h2>
+                        </th>
+                        <th class="col-lg-9">
+                            <h2><b>Product Name</b></h2>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                    <tr class="row">
+                        <th class="col-lg-1">
+                            <h2>{{forloop.counter}}</h2>
+                        </th>
+                        <td class="col-lg-9">
+                            <h2>{{product.name}}</h2></button>
+                        </td>
+                        <td class="col-lg-2">
+
+                            <div class="d-flex">
+                                {% if request.user.is_authenticated and request.user.is_superuser %}
+                                <button type="button" class="btn btn-outline-light"><a
+                                        href="{% url 'store:updateProduct' product.id %}">
+                                        <h2>Update</h2>
+                                    </a></button>
+                                <button type="button" class="btn btn-danger"><a
+                                        href="{% url 'store:deleteProduct' product.id %}">
+                                        <h2>Delete</h2>
+                                    </a></button>
+
+                                <br>
+                            </div>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+    <div class="jumbotron text-white bg-dark mb-3" id="customerListScroll">
+        <h1 class="display-4"><b><i><u>Customer List!</u></i></b></h1>
+        <p class="lead">These are the customers in the system.</p>
+        <hr class="my-4">
+        <table class="table text-center">
+            <thead>
+                <tr>
+                    <th scope="col-lg-1">
+                        <h2><b>S N</b></h2>
+                    </th>
+                    <th scope="col-lg-9">
+                        <h2><b>Customer Name</b></h2>
+                    </th>
+                    <th scope="col-lg-9">
+                        <h2><b>Customer Email</b></h2>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for customer in customers %}
+                <tr class="table">
+                    <th class="col-lg-1">
+                        <h2>{{forloop.counter}}</h2>
+                    </th>
+                    <td class="col-lg-9">
+                        <h2>{{customer.name}}</h2>
+                    </td>
+                    <td class="col-lg-9">
+                        <h2>{{customer.user}}</h2>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% if request.user.is_superuser %}
+    <div class="jumbotron text-white bg-dark mb-3" id="makeUsersStaffScroll">
+        <h1 class="display-4">Make users - <b><i><u>Staff!</u></i></b></h1>
+        <hr class="my-4">
+        <p>To go to the user-staff admin page click on the link below.</p>
+        <a class="btn btn-primary btn-lg" href="{% url 'store:make-staff' %}" role="button">Make Staff Page</a>
+    </div>
+    {% endif %}
+
+
+    {% comment %}
+    <form method="POST" action="{% url 'store:adminDashboard2' %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="users">Select users:</label>
+            <select class="form-control" id="users" name="users" multiple>
+                {% for user in users %}
+                <option value="{{ user.id }}">{{ user.username }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Make Staff</button>
+    </form>
+    {% if success %}
+    <p>Users have been successfully made staff.</p>
+    {% endif %}
+    <script>
+        // Reload the page after the form is submitted
+        $(function () {
+            $('#make-staff-form').on('submit', function (event) {
+                event.preventDefault();
+                $.ajax({
+                    type: 'POST',
+                    url: '{% url "store:make-staff" %}',
+                    data: $(this).serialize(),
+                    success: function () {
+                        location.reload();
+                    }
+                });
+            });
+        });
+    </script>
+    {% endcomment %}
+
+
+    {% if request.user.is_superuser %}
+    <div class="jumbotron text-white bg-dark mb-3" id="randomObjectScroll">
+        <h1 class="display-4"><b><i><u>Random object !</u></i> which a staff can't see!</b></h1>
+        <div class="d-flex justify-content-end">
+            <button type="button" class="btn btn-success"><a href="{% url 'randomObject:randomObject-create' %}">
+                    <h2>Add a random object</h2>
+                </a></button>
+        </div>
+        <p class="lead">These are the random objects in the system.</p>
+        <hr class="my-4">
+        <table class="table text-center">
+            <thead>
+                <tr>
+                    <th scope="col-lg-1">
+                        <h2>S N</h2>
+                    </th>
+                    <th scope="col-lg-9">
+                        <h2>RandomObject Name</h2>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for randomObject in randomObjects %}
+                <tr class="table">
+                    <th class="col-lg-1">
+                        <h2>{{forloop.counter}}</h2>
+                    </th>
+                    <td class="col-lg-9"><a href="{% url 'randomObject:randomObject-detail' pk=randomObject.pk %}">
+                            <h2>{{randomObject.name}}</h2>
+                        </a>
+                    </td>
+                    <td class="col-lg-2">
+
+                        <div class="d-flex">
+                            {% if request.user.is_authenticated and request.user.is_superuser %}
+                            <button type="button" class="btn btn-outline-light"><a
+                                    href="{% url 'randomObject:randomObject-update' pk=randomObject.pk %}">
+                                    <h2>Update</h2>
+                                </a></button>
+                            <button type="button" class="btn btn-danger"><a
+                                    href="{% url 'randomObject:randomObject-delete' pk=randomObject.pk %}">
+                                    <h2>Delete</h2>
+                                </a></button>
+
+                            <br>
+                        </div>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+    {% endblock content %}
+
+</div>
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+    integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+    crossorigin="anonymous"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+    crossorigin="anonymous"></script>
+
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+    integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+    crossorigin="anonymous"></script>
+
+<script type="text/javascript" src="{% static 'js/cart.js' %}"></script>
+
+<script>
+    function scrollToDivProducts() {
+        var div = document.getElementById("productsScroll");
+        div.scrollIntoView({ behavior: 'smooth' });
+    }
+    function scrollToDivCustomerList() {
+        var div = document.getElementById("customerListScroll");
+        div.scrollIntoView({ behavior: 'smooth' });
+    }
+    function scrollToDivMakeUsersStaff() {
+        var div = document.getElementById("makeUsersStaffScroll");
+        div.scrollIntoView({ behavior: 'smooth' });
+    }
+    function scrollToDivRandomObject() {
+        var div = document.getElementById("randomObjectScroll");
+        div.scrollIntoView({ behavior: 'smooth' });
+    }
+</script>

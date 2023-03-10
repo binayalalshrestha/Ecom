@@ -1,0 +1,11 @@
+{% extends 'randomObject/base.html' %}
+
+{% block content %}
+<h1>Delete {{ object.name }}?</h1>
+<form method="post">
+    {% csrf_token %}
+    <p>Are you sure you want to delete this random object which a staff can't see?</p>
+    <button type="submit">Yes</button>
+    <a href="{% url 'store:adminDashboard2' %}">No, cancel</a>
+</form>
+{% endblock %}

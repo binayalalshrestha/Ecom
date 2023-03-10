@@ -1,0 +1,43 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{% block content %}
+
+
+<div class="product-detail-image">
+    <img src="{{product.imageURL}}">
+</div>
+
+
+
+<div class="col-lg-9">
+    <nav id="navbar-example2" class="navbar navbar-light bg-light">
+        <a class="navbar-brand" href="#">{{product.name}}</a>
+        <ul class="nav nav-pills">
+            <li class="nav-item">
+                <a class="nav-link" href="#fat">Product Details</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    <div class="spinner-border text-warning" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </a>
+            </li>
+
+        </ul>
+    </nav>
+    <div data-spy="scroll" data-target="#navbar-example2" data-offset="0">
+        <p>{{product.description|safe}}</p>
+    </div>
+    <br>
+    <hr>
+    <button data-product="{{product.id}}" data-action="add" class="btn btn-outline-secondary add-btn update-cart">Add to
+        Cart</button>
+    {% if request.user.is_authenticated and request.user.is_superuser %}
+    <a href="{% url 'store:deleteProduct' product.id %}" class="btn btn-primary">Delete
+        Product</a>
+    {% endif %}
+    <h4 style="display: inline-block;float: right"> रू{{product.price|floatformat:2}}</h4>
+</div>
+
+{% endblock content %}

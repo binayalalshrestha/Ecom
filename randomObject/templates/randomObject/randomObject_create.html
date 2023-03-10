@@ -1,0 +1,11 @@
+{% extends 'randomObject/base.html' %}
+
+{% block content %}
+<h1>Create a Random Object which a staff cannot see!!</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Create</button>
+</form>
+<a href="{% url 'store:adminDashboard2' %}">Back to random object list</a>
+{% endblock %}

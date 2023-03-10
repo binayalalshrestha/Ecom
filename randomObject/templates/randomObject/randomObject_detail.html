@@ -1,0 +1,17 @@
+{% extends 'randomObject/base.html' %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{% url 'randomObject:randomObject-list' %}">RandomObject List</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ randomObject.name }}</li>
+    </ol>
+</nav>
+
+<h1>{{ randomObject.name }}</h1>
+<p>Type: {{ randomObject.type }}</p>
+
+<a href="{% url 'randomObject:randomObject-update' randomObject.id %}" class="btn btn-secondary">Update</a>
+<a href="{% url 'randomObject:randomObject-delete' randomObject.id %}" class="btn btn-danger">Delete</a>
+
+{% endblock %}

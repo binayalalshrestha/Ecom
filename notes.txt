@@ -1,0 +1,50 @@
+Things to do :
+
+a. Profile picture of user. --------------------------------------------------Done
+b. Search by category --------------------------------------------------------Done
+c. A good product page with description --------------------------------------Done
+d. Admin side dashboard to CRUD - view, add , update, delete product ---------Done
+e. Sending email upon register -----------------------------------------------Done
+
+
+f. order.orderitem_set.all() - what does this do------------------------------Done
+
+orderitem_set chai reverse relation ho django le banayeko order model ma
+esley chai hami lai access dincha tyo order ko related orderItems ko sabai details ma
+QuerySet lincha sabai OrderItem jun chai related cha order insance sanga foreign key ko relationship bata Order and OrderItem ko
+
+
+
+
+
+Email verification progress
+
+Class based views
+Internal user ko concept - staff
+crud with class based 
+
+
+Menu in Dashboard ! ( side bar )
+
+
+API:
+
+Django Rest framework
+
+API to create products
+API to list all products
+API to view detail of each product
+API to update product details
+API to list products by categories
+Search functionality
+
+API to register as a user
+API to create internal user for super user
+API to login ( checkout JWT Authentication)
+API to list all customers and internal users
+API to activate/deactivate users. Note: Only super user should be able to activate/deactivate internal users.
+
+Create custom json renderer to make sure responses have consistent structure. 
+Make use of pagination when required. 
+Create custom exception handler to handle exceptions.
+
