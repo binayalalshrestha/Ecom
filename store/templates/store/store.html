@@ -42,6 +42,47 @@
         </div>
     </div>
 
+    <div class="jumbotron text-black bg-dark mb-3 d-flex justify-content-center">
+        <section class="big-deal text-pure">
+            <div class="container">
+                <h1 class="section-heading">Count Down for sale !</h1>
+                <div class="timer">
+                    <div>
+                        <span id="days"></span>
+                        <span>Days</span>
+                    </div>
+                    <div>
+                        <span id="hours"></span>
+                        <span>Hours</span>
+                    </div>
+                    <div>
+                        <span id="minutes"></span>
+                        <span>Minutes</span>
+                    </div>
+                    <div>
+                        <span id="seconds"></span>
+                        <span>Seconds</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <script type="text/javascript">
+            var dest = new Date("Dec 13,2022 12:12:12").getTime();
+            var x = setInterval(function () {
+                var now = new Date().getTime();
+                var diff = dest - now;
+                var day = Math.floor(diff / (1000 * 60 * 60 * 24));
+                var hour = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                var min = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                var sec = Math.floor((diff % (1000 * 60)) / (1000));
+                document.getElementById("days").innerHTML = day;
+                document.getElementById("hours").innerHTML = hour;
+                document.getElementById("minutes").innerHTML = min;
+                document.getElementById("seconds").innerHTML = sec;
+            }, 1000);
+        </script>
+    </div>
+
 
 
     <!-- <div class="col-lg-4">
