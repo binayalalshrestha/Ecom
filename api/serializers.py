@@ -50,7 +50,7 @@ class ProductByCatSerializer(serializers.ModelSerializer):
         model = Product
         fields = '__all__'
 
-class ProductForSearchSerializer(serializers.ModelSerializer):
+class SearchProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ('id', 'name', 'category', 'price', 'description', 'digital', 'image')

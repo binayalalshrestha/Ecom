@@ -18,7 +18,7 @@ from api.serializers import (
     ProductAddSerializer,
     ProductSerializer,
     ProductByCatSerializer,
-    ProductForSearchSerializer)
+    SearchProductSerializer)
 
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
@@ -32,6 +32,11 @@ from django.shortcuts import get_object_or_404
 
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
+
+from django.contrib.auth import authenticate, login
+
+from django.contrib.auth.views import LogoutView
+
 
 
 # api to list all products
@@ -69,7 +74,7 @@ class ProductDescription(APIView):
 
 
 # api to POST
-class ProductAdding(APIView):
+class CreateProduct(APIView):
     def post(self, request, format=None):
         serializer = ProductAddSerializer(data=request.data)
         if serializer.is_valid():
@@ -80,7 +85,7 @@ class ProductAdding(APIView):
 
 
 # api to get, update and delete
-class ProductDetail(APIView):
+class ProductGetPutDel(APIView):
     def get_object(self, id):
         try:
             return Product.objects.get(pk=id)
@@ -112,19 +117,25 @@ class ProductListByCategory(ListAPIView):
     serializer_class = ProductByCatSerializer
 
     def get_queryset(self):
-        category_name = self.kwargs['category_name']
+        print("=====get request=======")
+        category_name = self.kwargs.get('category_name')
         return Product.objects.filter(category__name=category_name)
 
-    def get_context_data(self, **kwargs):
-        category_name = self.kwargs['category_name']
-        context = super().get_context_data(**kwargs)
-        context['category'] = Category.objects.get(name=category_name)
-        return context
+    # def get_context_data(self, **kwargs):
+    #     print("=====context=====")
+    #     category_name = self.kwargs['category_name']
+    #     context = super().get_context_data(**kwargs)
+
+        
+
+    #     print("=====context parent========",context)
+    #     context['category'] = Category.objects.get(name=category_name)
+    #     return context
 
 
 # API for search functionality
 
-class ProductForSearch(APIView):
+class SearchProduct(APIView):
     def get(self, request):
         q = request.GET.get('q')            # request . query params
         categoryFilter = request.GET.get('category')
@@ -134,7 +145,7 @@ class ProductForSearch(APIView):
             products = Product.objects.all()
         if q:
             products = products.filter(name__icontains=q)
-        serializer = ProductForSearchSerializer(products, many=True)
+        serializer = SearchProductSerializer(products, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -169,6 +180,36 @@ class UserRegistrationAPIView(APIView):
             # If there's any error while creating the user, return an error response.
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
+
+
+
+
+class LoginAPIView(APIView):
+	def post(self, request, format=None):
+		username = request.data.get('username')
+		password = request.data.get('password')
+		try:
+			user = User.objects.get(username=username)
+		except:
+			return Response({'error': 'User does not exist'}, status=status.HTTP_400_BAD_REQUEST)
+		user = authenticate(request, username=username, password=password)
+	
+		if user is not None:
+			login(request, user)
+			if user.is_superuser:
+				return Response({'redirect': 'adminDashboard2'})
+			return Response({'redirect': 'store'})
+		else:
+			return Response({'error': 'Username or password is incorrect'}, status=status.HTTP_401_UNAUTHORIZED)
+                
+
+
+class LogoutAPIView(LogoutView):
+	def post(self, request, *args, **kwargs):
+		response = super().post(request, *args, **kwargs)
+		return Response({'message': 'User logged out successfully'})
+
+          
 
 
 # @api_view(['GET','POST'])
