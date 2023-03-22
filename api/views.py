@@ -11,14 +11,10 @@ from store.models import (
     Product,)
 
 from api.serializers import (
-     
-    CategorySerializer, 
-    ListProductSerializer, 
-    ProductDetailSerializer, 
-    ProductAddSerializer,
-    ProductSerializer,
-    ProductByCatSerializer,
-    SearchProductSerializer)
+    StoreProductsSerializer,
+    UserSerializer,
+    UserLogInSerializer,
+    )
 
 from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
@@ -37,14 +33,114 @@ from django.contrib.auth import authenticate, login
 
 from django.contrib.auth.views import LogoutView
 
+# for basic auth
+from rest_framework.permissions import IsAuthenticated
+
+# for token auth
+from rest_framework.authtoken.models import Token
+
+
+
+
+# API to list all products
+class ListProductView(APIView):
+    def get(self, request, format=None):
+        products = Product.objects.values(
+            'id',
+            'name',
+            'category',
+            'price',
+            'description',
+            'digital',
+            'image')
+        serializer = StoreProductsSerializer(data=products, many=True)
+        serializer.is_valid()
+        return Response(serializer.data)
+    
+
+# API to Create Product
+class CreateProductView(APIView):
+    # permission_classes = [IsAuthenticated]
+    def post(self, request, format=None):
+        serializer = StoreProductsSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# API to Retrieve, Update and Delete
+class ProductRetrieveUpdateAndDeleteView(APIView):
+    def get_object(self, id):
+        try:
+            return Product.objects.get(pk=id)
+        except Product.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+    
+    def get(self, request, id, format=None):
+        product = self.get_object(id)
+        serializer = StoreProductsSerializer(product)
+        return Response(serializer.data)
+    
+    def put(self, request, id, format=None):
+        product = self.get_object(id)
+        serializer = StoreProductsSerializer(product, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def delete(self, request, id, format=None):
+        product = self.get_object(id)
+        product.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+
+# API to list products by category
+class ListProductByCategoryView(ListAPIView):
+    serializer_class = StoreProductsSerializer
+
+    def get_queryset(self):
+        category_name = self.kwargs.get('category_name')
+        return Product.objects.filter(category__name=category_name)
+
+# APi to search
+class ProductSearchView(APIView):
+    def get(self, request):
+        q = request.GET.get('q')            # request . query params
+        categoryFilter = request.GET.get('category')
+        if categoryFilter:
+            products = Product.objects.filter(category=categoryFilter)
+        else:
+            products = Product.objects.all()
+        if q:
+            products = products.filter(name__icontains=q)
+        serializer = StoreProductsSerializer(products, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
+
+
+
+
+
+
+
 
 
 # api to list all products
-class ProductList(APIView):
+'''
+class ListProductView(APIView):
     def get(self, request, format=None):
-        products = Product.objects.all()
-        serializer = ListProductSerializer(products, many=True)
+        products = Product.objects.values('id', 'name')
+        serializer = StoreProductsSerializer(data=products, many=True)
+        serializer.is_valid()
         return Response(serializer.data)
+'''
+
+
 
     # def post(self, request, format=None):
     #     ''' 
@@ -65,16 +161,21 @@ class ProductList(APIView):
         
 
 # api to view detail of each product and add new product
-class ProductDescription(APIView):
+'''
+class DescribeProductView(APIView):
     def get(self, request, format=None):
-        products = Product.objects.all()
-        serializer = ProductDetailSerializer(products, many=True)
+        products = Product.objects.values('id','name','description')
+        serializer = StoreProductsSerializer(products, many=True)
         return Response(serializer.data)
+'''
+
     
 
 
 # api to POST
-class CreateProduct(APIView):
+'''
+class CreateProductView(APIView):
+    # permission_classes = [IsAuthenticated]
     def post(self, request, format=None):
         serializer = ProductAddSerializer(data=request.data)
         if serializer.is_valid():
@@ -82,9 +183,12 @@ class CreateProduct(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+'''
+
 
 
 # api to get, update and delete
+'''
 class ProductGetPutDel(APIView):
     def get_object(self, id):
         try:
@@ -109,10 +213,12 @@ class ProductGetPutDel(APIView):
         product = self.get_object(id)
         product.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+'''
+
 
 
 # API to list products by categories
-
+'''
 class ProductListByCategory(ListAPIView):
     serializer_class = ProductByCatSerializer
 
@@ -120,6 +226,8 @@ class ProductListByCategory(ListAPIView):
         print("=====get request=======")
         category_name = self.kwargs.get('category_name')
         return Product.objects.filter(category__name=category_name)
+'''
+
 
     # def get_context_data(self, **kwargs):
     #     print("=====context=====")
@@ -134,7 +242,7 @@ class ProductListByCategory(ListAPIView):
 
 
 # API for search functionality
-
+'''
 class SearchProduct(APIView):
     def get(self, request):
         q = request.GET.get('q')            # request . query params
@@ -147,6 +255,8 @@ class SearchProduct(APIView):
             products = products.filter(name__icontains=q)
         serializer = SearchProductSerializer(products, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+'''
+
 
 
 
@@ -184,33 +294,62 @@ class UserRegistrationAPIView(APIView):
 
 
 
-class LoginAPIView(APIView):
-	def post(self, request, format=None):
-		username = request.data.get('username')
-		password = request.data.get('password')
-		try:
-			user = User.objects.get(username=username)
-		except:
-			return Response({'error': 'User does not exist'}, status=status.HTTP_400_BAD_REQUEST)
-		user = authenticate(request, username=username, password=password)
-	
-		if user is not None:
-			login(request, user)
-			if user.is_superuser:
-				return Response({'redirect': 'adminDashboard2'})
-			return Response({'redirect': 'store'})
-		else:
-			return Response({'error': 'Username or password is incorrect'}, status=status.HTTP_401_UNAUTHORIZED)
-                
 
+# class LoginAPIView(APIView):
+#     def post(self, request, format=None):
+#         username = request.data.get('username')
+#         password = request.data.get('password')
+#         try:
+#             user = User.objects.get(username=username)
+#         except:
+#             return Response({'error': 'User does not exist'}, status=status.HTTP_400_BAD_REQUEST)
+#         user = authenticate(request, username=username, password=password)
+    
+#         if user is not None:
+#             token = Token.objects.create(user=user)
+#             print(token.key)
+#             # login(request, user)
+#             # if user.is_superuser:
+#             #     return Response({'redirect': 'adminDashboard2'})
+#             return Response({'token': token})
+#         else:
+#             return Response({'error': 'Username or password is incorrect'}, status=status.HTTP_401_UNAUTHORIZED)
+        
+
+class LoginAPIView(APIView):
+    def post(self, request, *args, **kwargs):
+
+        serializer = UserLogInSerializer(data=request.data,context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        username = serializer.validated_data['username']
+        password = serializer.validated_data['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            token, created = Token.objects.get_or_create(user=user)
+            return Response({
+                'token': token.key,
+                'user_id': user.pk
+            })
+        
+        return Response({'error': 'Username or password is incorrect'}, status=status.HTTP_401_UNAUTHORIZED)
 
 class LogoutAPIView(LogoutView):
-	def post(self, request, *args, **kwargs):
-		response = super().post(request, *args, **kwargs)
-		return Response({'message': 'User logged out successfully'})
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        return Response({'message': 'User logged out successfully'})  
 
           
 
+class CreateUserView(APIView):
+    def post(self, request, format=None):
+        if not request.user.is_superuser:
+            return Response({'message':'Only superusers can create users.'}, status=status.HTTP_403_FORBIDDEN)
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            return Response({'user_id': user.id}, status=status.HTTP_201_CREATED)
+        else:
+             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # @api_view(['GET','POST'])
 # def product_list(request, format=None):

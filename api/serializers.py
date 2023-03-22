@@ -8,53 +8,39 @@ back into complex types, after first validating the incoming data.
 from rest_framework import serializers
 from store.models import (
     Category, 
-    Product,)
+    Product,
+    )
+from django.contrib.auth.models import User
 
-
-
-        ###
-# to list all products
-class ListProductSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Product
-        fields = ['id','name']
-
-# to list products and their detail
-class ProductDetailSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Product
-        fields = ['id','name','description']
-
-# to add product
-class ProductAddSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Product
-        fields = '__all__'
-
-# getting the cateogry 
-class CategorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Category
-        fields = '__all__'
-
-# to get all of the products
-class ProductSerializer(serializers.ModelSerializer):
-    category = CategorySerializer()
+# Serializer that contains all the product fields:
+class StoreProductsSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(required=False)
+    name = serializers.CharField(required=False)
+    category = serializers.CharField(required=False)
+    price = serializers.FloatField(required=False)
+    description = serializers.CharField(required=False)
+    digital = serializers.BooleanField(required=False)
+    image = serializers.ImageField(required=False)
 
     class Meta:
         model = Product
-        fields = '__all__'
+        fields = ("id",
+                  "name",
+                  "category",
+                  "price",
+                  "description",
+                  "digital",
+                  "image")
 
-class ProductByCatSerializer(serializers.ModelSerializer):
+# Serializer for User LogIn:
+class UserLogInSerializer(serializers.Serializer):
+    username = serializers.CharField(max_length=200)
+    password = serializers.CharField(max_length=200)
+
+
+# create internal user for super user:
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Product
-        fields = '__all__'
-
-class SearchProductSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Product
-        fields = ('id', 'name', 'category', 'price', 'description', 'digital', 'image')
-
-
-
-        ###
+        model = User
+        fields = ('username', 'email', 'password', 'first_name', 'last_name')
+        extra_kwargs = {'password':{'write_only':True}}

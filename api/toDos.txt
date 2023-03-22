@@ -1,0 +1,35 @@
+To Dos (API):
+Django Rest framework   
+
+
+
+API to list all products    D
+
+API to view detail of each product  D
+
+API to create products  D
+
+API to update product details   D
+
+API to list products by categories  D
+
+Search functionality    D
+
+
+API to register as a user   
+
+API to create internal user for super user
+
+API to login ( checkout JWT Authentication)
+
+
+
+API to list all customers and internal users
+
+API to activate/deactivate users. Note: Only super user should be able to activate/deactivate internal users.
+
+Create custom json renderer to make sure responses have consistent structure. 
+
+Make use of pagination when required. 
+
+Create custom exception handler to handle exceptions.

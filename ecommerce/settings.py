@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'randomObject',
     'ckeditor',
 
+    'rest_framework.authtoken'
+
     
 ]
 
@@ -175,3 +177,11 @@ CKEDITOR_CONFIGS = {
 }
 CKEDITOR_BASEPATH = "/static/ckeditor/ckeditor/"
 CKEDITOR_UPLOAD_PATH = "uploads/"
+
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
+    ]
+}

@@ -1,34 +1,16 @@
-API:
+request.GET.get() : 
+the request object contains information about the user's request, what data they've sent to the page, where they are coming from etc.
+request.GET contains the GET variable. These are what you see in your browsers address bar. The .get() method is a method used for dictionaries.
+likewise, you will see request.POST used when a user submits a form.
 
-Django Rest framework
-
-API to create products
-
-API to list all products
-
-API to view detail of each product
-
-API to update product details
-
-API to list products by categories
-
-Search functionality
-
-
-API to register as a user
-
-API to create internal user for super user
-
-API to login ( checkout JWT Authentication)
-
-
-
-API to list all customers and internal users
-
-API to activate/deactivate users. Note: Only super user should be able to activate/deactivate internal users.
-
-Create custom json renderer to make sure responses have consistent structure. 
-
-Make use of pagination when required. 
-
-Create custom exception handler to handle exceptions.
+Lookup methods using the double underscore : 
+1. exact - returns objects that match the given value exactly-
+    users = User.objects.filter(username__exact="john")
+2. iexact - returns objects that match the given value case-insensitively-
+    users = User.objects.filter(username__iexact="JOHN")
+3. contains - returns objects that contain the given value.
+    articles = Article.objects.filter(title__contains='django')
+4. icontains - returns objects that contain the given value case-insensitively
+    articales = Articale.objects.filter(title__icontains='DJANGO')
+5. "in" - returns objects that match any of the given values.
+    articales = Article.objects.filter(id__in=[1,2,3])
