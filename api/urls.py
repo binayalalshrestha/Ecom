@@ -5,19 +5,12 @@ from rest_framework.urlpatterns import format_suffix_patterns
 
 # url for api
 urlpatterns = [
-    # path('listproductapi/',views.product_list),
-
     # Product List:
     path('listproductapi/',views.ListProductView.as_view()),
-
-    # path('product_description/',views.DescribeProductView.as_view()),
-
     # Product Add:
     path('product_add/', views.CreateProductView.as_view()),
-
     # Product Get, Update and Delete:
     path('productapi/<int:id>', views.ProductRetrieveUpdateAndDeleteView.as_view()),
-
     # Product search by category:
     path('category/<str:category_name>/', views.ListProductByCategoryView.as_view(), name='product_list_by_category'),
 
@@ -31,9 +24,12 @@ urlpatterns = [
 
     path('api/login/', views.LoginAPIView.as_view()),
 
-    # path('logout/', views.LogoutAPIView.as_view()),
+    path('logout/', views.LogoutAPIView.as_view()),
 
     path('users/', views.CreateUserView.as_view(), name='create_user'),
+
+    path('customers/', views.CustomerListView.as_view()),
+    path('deactivate/<int:pk>/', views.UserActivationView.as_view()),
 
 ]
 

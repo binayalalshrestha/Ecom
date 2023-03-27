@@ -16,15 +16,15 @@ API to list products by categories  D
 Search functionality    D
 
 
-API to register as a user   
+API to register as a user   D
 
 API to create internal user for super user
 
-API to login ( checkout JWT Authentication)
+API to login ( checkout JWT Authentication) D   jwt left
 
 
 
-API to list all customers and internal users
+API to list all customers and internal users    D
 
 API to activate/deactivate users. Note: Only super user should be able to activate/deactivate internal users.
 
