@@ -30,8 +30,3 @@ class CustomJSONRenderer(JSONRenderer):
             'data': data
         }
         return super(CustomJSONRenderer, self).render(response_data, accepted_media_type, renderer_context)
-    
-
-
-
-

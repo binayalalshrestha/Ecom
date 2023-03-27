@@ -51,15 +51,14 @@ from rest_framework.authtoken.models import Token
 
 
 
-# API to list all products
+
+'''
 class ListProductView(ListAPIView):
     queryset=Product.objects.all()
     serializer_class=StoreProductsSerializer
+'''
 
-
-
-class ListProductView(APIView):
-    def get(self, request, format=None):
+'''
         products = Product.objects.values(
             'id',
             'name',
@@ -68,6 +67,14 @@ class ListProductView(APIView):
             'description',
             'digital',
             'image')
+        '''
+
+
+
+# API to list all products
+class ListProductView(APIView):
+    def get(self, request, format=None):
+        products = Product.objects.all()
         serializer = StoreProductsSerializer(data=products, many=True)
         serializer.is_valid()
         return Response(serializer.data)
@@ -144,7 +151,7 @@ class UserRegistrationAPIView(APIView):
         
         if not username or not password:     #or not email:
             # If any required field is missing, return an error response.
-            return Response({'error': 'Username and password are required.'}, 
+            return Response({'error': 'Username and Password are required.'}, 
                             status=status.HTTP_400_BAD_REQUEST)
         
         try:
