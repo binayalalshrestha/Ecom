@@ -6,8 +6,7 @@ back into complex types, after first validating the incoming data.
 '''
 
 from rest_framework import serializers
-from store.models import (
-    Category, 
+from store.models import ( 
     Product,
     Customer,
     )
@@ -33,6 +32,9 @@ class StoreProductsSerializer(serializers.ModelSerializer):
                   "digital",
                   "image")
 
+
+        
+
 # Serializer for User LogIn:
 class UserLogInSerializer(serializers.Serializer):
     username = serializers.CharField(max_length=200)
@@ -51,6 +53,7 @@ class UserSerializer(serializers.ModelSerializer):
         extra_kwargs = {'password':{'write_only':True}}
 
 
+# Customer Serializer
 class CustomerSerializer(serializers.ModelSerializer):
     user = serializers.CharField(required=False)
     name = serializers.CharField(required=False)
