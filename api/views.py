@@ -8,30 +8,39 @@ from django.shortcuts import (
 
 from store.models import ( 
     Category, 
-    Product,)
+    Product,
+    Customer)
 
 from api.serializers import (
     StoreProductsSerializer,
     UserSerializer,
     UserLogInSerializer,
+    CustomerSerializer,
     )
 
+from rest_framework import status, generics
+
 from rest_framework.views import APIView
+
 from rest_framework.generics import ListAPIView
 
 from rest_framework.decorators import api_view
 
 from rest_framework.response import Response
-from rest_framework import status
+
 from django.core import serializers
+
 from django.shortcuts import get_object_or_404
 
 from rest_framework.authtoken.models import Token
+
 from django.contrib.auth.models import User
 
 from django.contrib.auth import authenticate, login
 
 from django.contrib.auth.views import LogoutView
+
+from .permissions import IsSuperUser
 
 # for basic auth
 from rest_framework.permissions import IsAuthenticated
@@ -43,6 +52,12 @@ from rest_framework.authtoken.models import Token
 
 
 # API to list all products
+class ListProductView(ListAPIView):
+    queryset=Product.objects.all()
+    serializer_class=StoreProductsSerializer
+
+
+
 class ListProductView(APIView):
     def get(self, request, format=None):
         products = Product.objects.values(
@@ -120,6 +135,104 @@ class ProductSearchView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+# Api for registration:
+class UserRegistrationAPIView(APIView):
+    def post(self, request):
+        username = request.data.get('username')
+        password = request.data.get('password')
+        # email = request.data.get('email')
+        
+        if not username or not password:     #or not email:
+            # If any required field is missing, return an error response.
+            return Response({'error': 'Username and password are required.'}, 
+                            status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            # Create a new user with the provided data.
+            user = User.objects.create_user(username=username, password=password)   # email=email)
+            #token = Token.objects.create(user=user)
+            # Return a success response with the created user and auth token data.
+            return Response({
+                'id': user.id,
+                'username': user.username,
+                # 'email': user.email,
+                # 'auth_token': token.key
+            }, status=status.HTTP_201_CREATED)
+        except Exception as e:
+            # If there's any error while creating the user, return an error response.
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+# API to log a user in:
+class LoginAPIView(APIView):
+    def post(self, request, *args, **kwargs):
+
+        serializer = UserLogInSerializer(data=request.data,context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        username = serializer.validated_data['username']
+        password = serializer.validated_data['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            token, created = Token.objects.get_or_create(user=user)
+            return Response({
+                'token': token.key,
+                'user_id': user.pk
+            })
+        
+        return Response({'error': 'Username or password is incorrect'}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+# API to log a user out:
+class LogoutAPIView(LogoutView):
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        return Response({'message': 'User logged out successfully'})  
+
+          
+# API to create User
+class CreateUserView(APIView):
+    def post(self, request, format=None):
+        if not request.user.is_superuser:
+            return Response({'message':'Only superusers can create users.'}, status=status.HTTP_403_FORBIDDEN)
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            return Response({'user_id': user.id}, status=status.HTTP_201_CREATED)
+        else:
+             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+# APIT to view all Customers
+class CustomerListView(generics.ListAPIView):
+    queryset = Customer.objects.all()
+    serializer_class = CustomerSerializer
+
+    # def get(self, request, format=None):
+    #     customers = Customer.objects.values(
+    #         'user',
+    #         'name',
+    #         'verification_token',
+    #         'email',
+    #         'profile_pic')
+    #     serializer = CustomerSerializer(data=customers, many=True)
+    #     serializer.is_valid()
+    #     return Response(serializer.data)
+
+
+# API to activate/deactivate users
+
+class UserActivationView(APIView):
+    permission_classes = [IsSuperUser]
+
+    def put(self, request, pk):
+        try:
+            user = User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        
+        user.is_active = False
+        user.save()
+        return Response({'is_active': user.is_active})
 
 
 
@@ -263,7 +376,7 @@ class SearchProduct(APIView):
 # ----------------------------------
 # ----------------------------------
 # ----------------------------------
-
+'''
 class UserRegistrationAPIView(APIView):
     def post(self, request):
         username = request.data.get('username')
@@ -289,6 +402,8 @@ class UserRegistrationAPIView(APIView):
         except Exception as e:
             # If there's any error while creating the user, return an error response.
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+'''
+
 
 
 
@@ -316,6 +431,7 @@ class UserRegistrationAPIView(APIView):
 #             return Response({'error': 'Username or password is incorrect'}, status=status.HTTP_401_UNAUTHORIZED)
         
 
+'''
 class LoginAPIView(APIView):
     def post(self, request, *args, **kwargs):
 
@@ -350,6 +466,7 @@ class CreateUserView(APIView):
             return Response({'user_id': user.id}, status=status.HTTP_201_CREATED)
         else:
              return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+'''
 
 # @api_view(['GET','POST'])
 # def product_list(request, format=None):

@@ -9,6 +9,7 @@ from rest_framework import serializers
 from store.models import (
     Category, 
     Product,
+    Customer,
     )
 from django.contrib.auth.models import User
 
@@ -42,5 +43,25 @@ class UserLogInSerializer(serializers.Serializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('username', 'email', 'password', 'first_name', 'last_name')
+        fields = ('username',
+                  'email',
+                  'password',
+                  'first_name',
+                  'last_name')
         extra_kwargs = {'password':{'write_only':True}}
+
+
+class CustomerSerializer(serializers.ModelSerializer):
+    user = serializers.CharField(required=False)
+    name = serializers.CharField(required=False)
+    verification_token = serializers.FloatField(required=False)
+    email = serializers.EmailField(required=False)
+    profile_pic = serializers.ImageField(required=False)
+
+    class Meta:
+        model = Customer
+        fields = ("user",
+                  "name",
+                  "verification_token",
+                  "email",
+                  "profile_pic")
