@@ -33,3 +33,12 @@ Create custom json renderer to make sure responses have consistent structure.
 Make use of pagination when required. 
 
 Create custom exception handler to handle exceptions.
+
+
+
+
+
+3/29
+
+- python data types
+- kina list use vauracha, k garda use thik huncha

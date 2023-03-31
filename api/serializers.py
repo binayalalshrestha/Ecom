@@ -32,6 +32,13 @@ class StoreProductsSerializer(serializers.ModelSerializer):
                   "digital",
                   "image")
 
+        # fields = ["id",
+        #           "name",
+        #           "category",
+        #           "price",
+        #           "description",
+        #           "digital",
+        #           "image"]
 
         
 

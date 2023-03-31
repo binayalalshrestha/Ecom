@@ -17,8 +17,6 @@ integrating with a specific client-side application or library.
 from rest_framework.renderers import JSONRenderer
 from rest_framework import renderers
 from rest_framework.utils.serializer_helpers import ReturnList, ReturnDict
-
-from rest_framework.renderers import JSONRenderer
 from django.core.serializers.json import DjangoJSONEncoder
 
 class CustomJSONRenderer(JSONRenderer):

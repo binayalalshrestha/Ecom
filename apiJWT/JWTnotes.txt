@@ -1,0 +1,90 @@
+JSON Web Token (JWT)
+JSON Web Token is a fairly new standard which can be used for token based authentication.
+Unlike the built-in TokenAuthentication scheme, JWT Authentication doesn't need to use a database to validate a token.
+    for more info - https://jwt.io/
+
+Simple JWT
+Simple JWT provides a JSON Web Token authentication backend for the Django REST Framework.
+It aims to cover the most common use cases of JETs by offering a conservative set of default features.
+It also aims to be easily extensible in case a desired feature is not present.
+    for more info - https://django-rest-framework-simplejwt.readthedocs.io/en/latest/
+
+How to Install Simple JWT
+pip install djangorestframework-simplejwt
+
+Configure Simple JWT
+(globally)
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+}
+
+(locally)
+in urls.py -
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+urlpatterns = [
+    path('gettoken/',TokenObtainPairView.as_view(),name='token_object_pair'),
+    path('refreshtoken/',TokenRefreshView.as_view(),name='token_refresh'),
+]
+        You can also include a route for Simple JWTs TokenVerifyView if you wish to allow API users to verify
+        HMAC-signed tokesn without having access to your signing key.
+        to do this -   
+            from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView, TokenVerifyView
+            urlpatterns = [
+                path('gettoken/',TokenObtainPairView.as_view(),name='token_object_pair'),
+                path('refreshtoken/',TokenRefreshView.as_view(),name='token_refresh'),
+                path('verifytoken/',TokenVerifyView.as_view(),name='token_verify'),
+            ]
+
+JWT Default settings
+from datetime import timedelta
+SIMPLE_JWT={
+    'ACCESS_TOKEN_LIFETIME':timedelta(minutes=5),   # a datetime.timedelta object which specifies how long access tokens are valid.
+    'REFRESH_TOKEN_LIFETIME':timedelta(days=1),     # a datetime.timedelta object which specifies how long refresh tokens are valid.
+    'ROTATE_REFRESH_TOKENS':False,
+
+    # '' These are the other settings in JWT '':
+
+    "BLACKLIST_AFTER_ROTATION": False,
+    "UPDATE_LAST_LOGIN": False,
+
+    "ALGORITHM": "HS256",
+    "SIGNING_KEY": settings.SECRET_KEY,
+    "VERIFYING_KEY": "",
+    "AUDIENCE": None,
+    "ISSUER": None,
+    "JSON_ENCODER": None,
+    "JWK_URL": None,
+    "LEEWAY": 0,
+
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
+    "USER_ID_FIELD": "id",
+    "USER_ID_CLAIM": "user_id",
+    "USER_AUTHENTICATION_RULE": "rest_framework_simplejwt.authentication.default_user_authentication_rule",
+
+    "AUTH_TOKEN_CLASSES": ("rest_framework_simplejwt.tokens.AccessToken",),
+    "TOKEN_TYPE_CLAIM": "token_type",
+    "TOKEN_USER_CLASS": "rest_framework_simplejwt.models.TokenUser",
+
+    "JTI_CLAIM": "jti",
+
+    "SLIDING_TOKEN_REFRESH_EXP_CLAIM": "refresh_exp",
+    "SLIDING_TOKEN_LIFETIME": timedelta(minutes=5),
+    "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
+
+    "TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainPairSerializer",
+    "TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSerializer",
+    "TOKEN_VERIFY_SERIALIZER": "rest_framework_simplejwt.serializers.TokenVerifySerializer",
+    "TOKEN_BLACKLIST_SERIALIZER": "rest_framework_simplejwt.serializers.TokenBlacklistSerializer",
+    "SLIDING_TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainSlidingSerializer",
+    "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
+}
+
+
+
+Use JWT
+GET Token
+http POST http://127.0.0.1:8000/gettoken/username="user1"password="something"
+

@@ -1,6 +1,7 @@
 from pathlib import Path
 from decouple import config
 import os
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -33,8 +34,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'api',
+    'apiJWT',
     'store',
     'randomObject',
+
     'ckeditor',
 
     'rest_framework.authtoken'
@@ -181,9 +184,12 @@ CKEDITOR_UPLOAD_PATH = "uploads/"
 
 REST_FRAMEWORK = {
     # Authentication
+    # 'DEFAULT_AUTHENTICATION_CLASSES': [
+    #     'rest_framework.authentication.BasicAuthentication',
+    #     # 'rest_framework.authentication.SessionAuthentication',
+    # ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.BasicAuthentication',
-        # 'rest_framework.authentication.SessionAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
     # renderer
     'DEFAULT_RENDERER_CLASSES': [
@@ -200,3 +206,12 @@ REST_FRAMEWORK = {
     'EXCEPTION_HANDLER': 'api.handlers.custom_exception_handler',
 
 }
+
+SIMPLE_JWT={
+    'ACCESS_TOKEN_LIFETIME':timedelta(minutes=15),   # a datetime.timedelta object which specifies how long access tokens are valid.
+    'REFRESH_TOKEN_LIFETIME':timedelta(days=1),     # a datetime.timedelta object which specifies how long refresh tokens are valid.
+    'ROTATE_REFRESH_TOKENS':False,
+    'BLACKLIST_AFTER_ROTATION': False,
+}
+
+# AUTHENTICATION_BACKENDS = [    'django.contrib.auth.backends.ModelBackend',    'rest_framework_simplejwt.backends.JWTAuthenticationBackend',]
