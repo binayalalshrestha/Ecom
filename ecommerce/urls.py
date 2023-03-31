@@ -5,14 +5,28 @@ from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
 
+# for JWT 
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView
+)
+# from rest_framework_simplejwt import views as jwt_views
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     
     path('', include('api.urls')),
+
+    path('', include('apiJWT.urls')),
+    
     path('', include('store.urls')),
+    
     path('randomObject', include('randomObject.urls')),
 
     path('ckeditor/', include('ckeditor_uploader.urls')),
+
+    path('api/token/',TokenObtainPairView.as_view(),name='token_object_pair'),
+    path('api/token/refresh/',TokenRefreshView.as_view(),name='token_refresh'),
 ]
 
 # urls configuration for images

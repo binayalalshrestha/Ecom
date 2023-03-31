@@ -196,7 +196,7 @@ class LogoutAPIView(LogoutView):
         return Response({'message': 'User logged out successfully'})  
 
           
-# API to create User
+# API to create User        #***
 class CreateUserView(APIView):
     def post(self, request, format=None):
         if not request.user.is_superuser:
@@ -229,7 +229,7 @@ class CustomerListView(generics.ListAPIView):
 # API to activate/deactivate users
 
 class UserActivationView(APIView):
-    permission_classes = [IsSuperUser]
+    # permission_classes = [IsSuperUser]
 
     def put(self, request, pk):
         try:

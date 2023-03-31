@@ -14,3 +14,5 @@ Lookup methods using the double underscore :
     articales = Articale.objects.filter(title__icontains='DJANGO')
 5. "in" - returns objects that match any of the given values.
     articales = Article.objects.filter(id__in=[1,2,3])
+
+
