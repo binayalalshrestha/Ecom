@@ -11,11 +11,18 @@ from store.models import (
     Product,
     Customer)
 
+'''from . models import(
+    Singer,
+    Song,
+)'''
+
 from api.serializers import (
     StoreProductsSerializer,
     UserSerializer,
     UserLogInSerializer,
     CustomerSerializer,
+    # SingerSerializer,
+    # SongSerializer,
     )
 
 from rest_framework import status, generics
@@ -25,6 +32,8 @@ from rest_framework.views import APIView
 from rest_framework.generics import ListAPIView
 
 from rest_framework.decorators import api_view
+
+from rest_framework import viewsets
 
 from rest_framework.response import Response
 
@@ -47,6 +56,13 @@ from rest_framework.permissions import IsAuthenticated
 
 # for token auth
 from rest_framework.authtoken.models import Token
+
+# JWT
+
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
+
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 
@@ -73,6 +89,7 @@ class ListProductView(ListAPIView):
 
 # API to list all products
 class ListProductView(APIView):
+    permission_classes = [IsAuthenticated]
     def get(self, request, format=None):
         products = Product.objects.all()
         serializer = StoreProductsSerializer(data=products, many=True)
@@ -142,6 +159,110 @@ class ProductSearchView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+
+
+
+
+
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+
+        # Add custom claims
+        token['username'] = user.username
+        # ...
+
+        return token
+
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer
+
+
+
+
+
+# view that will show us all the end points in our application
+# go here and see all the routes you can visit
+@api_view(['GET'])
+def getRoutes(request):
+    routes = [
+        '/api/token',       # Here we can submit our username and password, we will get back a access and refresh token
+        '/api/token/refresh',   # This will give a new token based on the refresh token we sent
+    ]
+    return Response(routes)
+    # return JsonResponse(routes, safe=False)     # safe=Flase means we can render out anything other than a python dictionary
+
+
+class LoginAPIView(APIView):
+
+    def post(self, request):
+        try:
+            data = request.data
+            serializer = UserLogInSerializer(data = data)
+            if serializer.is_valid():
+                username = serializer.data['username']
+                password = serializer.data['password']
+
+                user = authenticate(username = username, password = password)
+
+                if user is None:
+
+                    return Response({
+                    'status' : 400,
+                    'message' : 'Invalid password',
+                    'data' : {}
+                })
+
+                '''if user.is_verified is False:
+                    return Response({
+                        'status' : 400,
+                        'message' : 'Your account is not verified',
+                        'data' : {}
+                    })'''
+            
+                refresh = RefreshToken.for_user(user)
+
+                return Response({
+                    'refresh': str(refresh),
+                    'access': str(refresh.access_token),
+                })
+
+            
+            return Response({
+                'status' : 400,
+                'message' : 'something went wrong',
+                'data' : serializer.errors
+            })
+        except Exception as e:
+            print(e)
+            
+
+
+# class RegisterAPI(APIView):
+
+#     def post(self, request):
+#         try:
+#             data = request.data
+#             serializer = UserSerializer(data = data)
+#             if serializer.is_valid():
+#                 serializer.save()
+#                 return Response({
+#                     'status' : 200,
+#                     'message' : 'Registration success! Check email.'
+#                     'data' : serializer.data,
+#                 })
+            
+#             return Response({
+#                 'status' : 400,
+#                 'message' : 'Something went wrong'
+#                 'data' : serializer.errors,
+#             })
+#         except Exception as e:
+#             print(e)
+
+
+
 # Api for registration:
 class UserRegistrationAPIView(APIView):
     def post(self, request):
@@ -171,7 +292,7 @@ class UserRegistrationAPIView(APIView):
 
 
 # API to log a user in:
-class LoginAPIView(APIView):
+'''class LoginAPIView(APIView):
     def post(self, request, *args, **kwargs):
 
         serializer = UserLogInSerializer(data=request.data,context={'request': request})
@@ -187,7 +308,7 @@ class LoginAPIView(APIView):
             })
         
         return Response({'error': 'Username or password is incorrect'}, status=status.HTTP_401_UNAUTHORIZED)
-
+'''
 
 # API to log a user out:
 class LogoutAPIView(LogoutView):
@@ -240,6 +361,20 @@ class UserActivationView(APIView):
         user.is_active = False
         user.save()
         return Response({'is_active': user.is_active})
+
+
+
+
+'''# to learn serializer relation
+class SingerViewSet(viewsets.ModelViewSet):
+    queryset = Singer.objects.all()
+    serializer_class = SingerSerializer
+
+class SongViewSet(viewsets.ModelViewSet):
+    queryset = Song.objects.all()
+    serializer_class = SongSerializer'''
+
+
 
 
 
