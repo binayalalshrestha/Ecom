@@ -42,3 +42,10 @@ Create custom exception handler to handle exceptions.
 
 - python data types
 - kina list use vauracha, k garda use thik huncha
+
+4/3
+
+-   create a main serializer , and a baby serializer which will inherit from the parent serializer
+        understand how this works and learn,
+-   serializerMethodField,
+-   generic views.

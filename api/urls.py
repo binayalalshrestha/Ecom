@@ -1,7 +1,25 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from . import views
+
+from .views import MyTokenObtainPairView
+
+from rest_framework_simplejwt.views import (
+    TokenRefreshView,
+)
+
+
+
 from rest_framework.urlpatterns import format_suffix_patterns
+
+'''
+from rest_framework.routers import DefaultRouter
+router = DefaultRouter()
+
+# Register SingerViewSet and SongViewSet with Router
+router.register('singer', views.SingerViewSet, basename='singer')
+router.register('Song', views.SongViewSet, basename='song')
+'''
 
 # url for api
 urlpatterns = [
@@ -23,6 +41,12 @@ urlpatterns = [
     # search_query is the product we want, eg., (bmw)     http://127.0.0.1:8000/api_search/products/?q=test
     # category is the category id, eg., (3)     http://127.0.0.1:8000/api_search/products/?category=3
 
+    path('getRoutes/', views.getRoutes),
+
+    # JWT AUTHENTICATION TOKEN ROUTES
+    path('token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+
     # REGISTER
     path('api/user/register/', views.UserRegistrationAPIView.as_view(), name='user_registration_api'),
 
@@ -41,6 +65,10 @@ urlpatterns = [
     # DEACTIVATE USER
     path('deactivate/<int:pk>/', views.UserActivationView.as_view()),
 
+
+    # to learn serializer relation
+    # path('router', include(router.urls)),
+    # path('auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
 
 urlpatterns = format_suffix_patterns(urlpatterns)
