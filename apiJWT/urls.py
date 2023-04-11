@@ -32,7 +32,7 @@ router = DefaultRouter()
 router.register('League', views.LeagueViewSet, basename='league')
 router.register('Team', views.TeamViewSet, basename='team')
 router.register('Player', views.PlayerViewSet, basename='player')
-
+router.register('Student',views.StudentViewSet, basename='student')
 
 
 
